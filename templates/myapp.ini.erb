@@ -1,0 +1,14 @@
+[uwsgi]
+module = wsgi:application
+
+master = true
+processes = 5
+
+uid = <%= @user %>
+socket = /run/uwsgi/myapp.sock
+chown-socket = nginx:nginx
+chmod-socket = 664
+vacuum = true
+
+die-on-term = true
+
