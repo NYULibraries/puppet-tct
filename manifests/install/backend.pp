@@ -26,10 +26,10 @@ class tct::install::backend (
   String $db_host       = lookup('tct::db_host', String, 'first'),
   String $db_password   = lookup('tct::db_password', String, 'first'),
   String $db_user       = lookup('tct::db_user', String, 'first'),
+  String $media_root    = lookup('tct::media_root', String, 'first'),
   String $epubs_src_folder = lookup('tct::epubs_src_folder', String, 'first'),
   String $frontend      = lookup('tct::frontend', String, 'first'),
   String $install_dir   = lookup('tct::install_dir', String, 'first'),
-  String $media_root    = lookup('tct::media_root', String, 'first'),
   String $pub_src       = lookup('tct::pub_src', String, 'first'),
   String $secret_key    = lookup('tct::secret_key', String, 'first'),
   String $static_root   = lookup('tct::static_root', String, 'first'),
@@ -104,8 +104,15 @@ class tct::install::backend (
     owner  => 'root',
     group  => 'root',
     mode   => '0777',
-    require => [ Vcsrepo["${install_dir}/${backend}"], Class['postgresql::server'], ],
+    require => [ Vcsrepo["${install_dir}/${backend}"], Class['postgresql::server'], File["$media_root"], ],
   }
+  file { "$static_root" :
+    ensure => directory,
+    owner  => $user,
+    group  => $user,
+    mode   => "0755",
+  }
+
 
   #  `python manage.py loaddata` without a data file argument with
   #  set the db tables and allow things to run

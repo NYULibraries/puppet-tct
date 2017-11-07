@@ -26,10 +26,10 @@ class tct::nginx (
   String $db_host       = lookup('tct::db_host', String, 'first'),
   String $db_password   = lookup('tct::db_password', String, 'first'),
   String $db_user       = lookup('tct::db_user', String, 'first'),
+  String $media_root    = lookup('tct::media_root', String, 'first'),
   String $epubs_src_folder = lookup('tct::epubs_src_folder', String, 'first'),
   String $frontend      = lookup('tct::frontend', String, 'first'),
   String $install_dir   = lookup('tct::install_dir', String, 'first'),
-  String $media_root    = lookup('tct::media_root', String, 'first'),
   String $pub_src       = lookup('tct::pub_src', String, 'first'),
   String $secret_key    = lookup('tct::secret_key', String, 'first'),
   String $static_root   = lookup('tct::static_root', String, 'first'),
@@ -37,6 +37,8 @@ class tct::nginx (
   String $user          = lookup('tct::user', String, 'first'),
   String $venv          = lookup('tct::venv', String, 'first'),
   String $www_dir       = lookup('tct::www_dir', String, 'first'),
+  #String $media         = lookup('tct::media', String, 'first'),
+  #String $static        = lookup('tct::static', String, 'first'),
 ){
 
   #file { '/run/nginx':
@@ -60,7 +62,8 @@ class tct::nginx (
   #}
   #nginx::resource::server { '172.28.128.6/tct':
   #nginx::resource::server { 'www.tct2.org':
-  nginx::resource::server { '192.168.50.99':
+  #nginx::resource::server { '192.168.50.99':
+  nginx::resource::server { "$basename" :
     # www_root => '/var/www/html/dist.prod',
   #  proxy        => 'http://localhost:54506',
   #uwsgi   => 'unix:/run/uwsgi/tct.sock',
@@ -70,22 +73,34 @@ class tct::nginx (
     uwsgi_params   => '/etc/nginx/uwsgi_params',
   }
 
-  #nginx::resource::location { 'test' :
-  #  uwsgi    => 'django',
-  #  server   => 'www.tct.wfc',
-  #}
-
-  nginx::resource::location { '/media' :
-    location_alias => '/srv/media', 
-    server         => 'www.tct.wfc',
+  ##
+  # media_root, epubs_src_folder, and static_root are created 
+  # in inatall::backend. It's a bit confusing to leave it there, 
+  # but that's where is is for now.
+  ##
+  nginx::resource::location { '/media'  :
+    location_alias => $media_root, 
+    server         => $basename,
+    require        => [ File[$media_root], File["$epubs_src_folder"], ],
   }
-
   nginx::resource::location { '/static' :
-    location_alias => '/srv/media', 
-    server         => 'www.tct.wfc',
+    location_alias => $static_root, 
+    server         => $basename,
+    require        => File["$static_root"],
+  }
+  
+  # I thought that /tct should get everything that the bower server
+  # gets, but I guess not
+  nginx::resource::location { '/tct' :
+    location_alias => "/var/www/html/dist.prod", 
+    server         => $basename,
   }
 
-    
+  nginx::resource::location { '/src' :
+    location_alias => "/var/www/html/src", 
+    server         => $basename,
+  }
+
   firewall { '100 allow http and https access' :
     dport  => [80, 443, 8080, 9000],
     proto  => tcp,
