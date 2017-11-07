@@ -39,7 +39,15 @@ class tct::install::backend (
   String $www_dir       = lookup('tct::www_dir', String, 'first'),
 ){
 
-  # postgres
+  # clone the backend
+  vcsrepo { "${install_dir}/${backend}":
+    ensure   => present,
+    provider => git,
+    source   => "https://github.com/NYULibraries/dlts-enm-tct-backend",
+    revision => $backend_revision,
+  }
+
+  # Set up postgres
   include postgresql::server
   postgresql::server::db { $tct_db:
     user     => $db_user,
