@@ -58,10 +58,10 @@ class tct::install (
 
   # Install the repos
   #vcsrepo { "${install_dir}/${backend}":
-  #  ensure   => present,
-  #  provider => git,
-  #  source   => "https://github.com/NYULibraries/dlts-enm-tct-backend",
-  #  revision => $backend_revision,
+  #  ensure     => present,
+  #  provider   => git,
+  #  source     => "https://github.com/NYULibraries/dlts-enm-tct-backend",
+  #  revision   => $backend_revision,
   #}
   # Install ius-release and python35u
   include yumrepos::ius
@@ -74,7 +74,7 @@ class tct::install (
                    'python35u-devel',
                    'python35u-pip',
                    ], 
-  {'ensure' => 'present'})
+  {'ensure'     => 'present'})
   class { 'python':
     version    => 'system',
     pip        => 'present',
@@ -91,20 +91,13 @@ class tct::install (
     owner      => 'root',
     timeout    => 1800,
   }->
-  #python::pip { 'virtualenv':
-  #  ensure     => latest,
-  #  pkgname     => 'virtualenv',
-  #  virtualenv => 'system',
-  #  owner      => 'root',
-  #  timeout    => 1800,
-  #}->
   python::pip { 'setuptools':
     ensure     => latest,
     pkgname    => 'setuptools',
     virtualenv => 'system',
     owner      => 'root',
     timeout    => 1800,
-  }
+  }->
   python::pyvenv { "$venv" :
     ensure     => present,
     version    => '3.5',

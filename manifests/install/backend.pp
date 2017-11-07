@@ -21,6 +21,7 @@
 class tct::install::backend (
   String $allowed_hosts = lookup('tct::allowed_hosts', String, 'first'),
   String $backend       = lookup('tct::backend', String, 'first'),
+  String $backend_revision = lookup('tct::backend_revision', String, 'first'),
   String $basename      = lookup('tct::basename', String, 'first'),
   String $baseurl       = lookup('tct::baseurl', String, 'first'),
   String $db_host       = lookup('tct::db_host', String, 'first'),
