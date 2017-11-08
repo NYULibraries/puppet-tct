@@ -125,13 +125,13 @@ class tct::install::backend (
 
   #  `python manage.py loaddata` without a data file argument with
   #  set the db tables and allow things to run
-  #exec { 'exec_manage_py_migrate':
-  #  path     => [ "${venv}/bin",'/bin','/usr/bin','/usr/local/bin'],
-  #  cwd      => "${install_dir}/${backend}",
-  #  command  => 'python manage.py migrate',
-  #  creates  => "${install_dir}/${backend}/reconciliation/__pycache__",
-  #  require  => [ Class['postgresql::server'], File['secretkeys.json'], Postgresql::Server::Database_grant["$db_user"], ],
-  #  user     => 'root',
-  #}
+  exec { 'exec_manage_py_migrate':
+    path     => [ "${venv}/bin",'/bin','/usr/bin','/usr/local/bin'],
+    cwd      => "${install_dir}/${backend}",
+    command  => 'python manage.py migrate',
+    creates  => "${install_dir}/${backend}/reconciliation/__pycache__",
+    require  => [ Class['postgresql::server'], File['secretkeys.json'], Postgresql::Server::Database_grant["$db_user"], File["${pub_src}/${basename}"], File["$epubs_src_folder"], ],
+    user     => 'root',
+  }
 
 }
