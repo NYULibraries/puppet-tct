@@ -11,7 +11,9 @@ master          = true
 # maximum number of worker processes
 processes       = 10
 # the socket (use the full path to be safe
-socket          = /tmp/nyu.sock
+#stats = /run/uwsgi/stats.sock
+#socket          = /tmp/nyu.sock
+socket          = /run/uwsgi/nyu.sock
 # ... with appropriate permissions - may be needed
 chmod-socket    = 666
 # clear environment on exit
@@ -19,4 +21,6 @@ vacuum          = true
 # reference correct settings file
 env=DJANGO_SETTINGS_MODULE=nyu.production_settings
 safe-pidfile = /tmp/nyu-master.pid
+#pidfile = /run/uwsgi/uwsgi.pid
+
 daemonize = /var/log/uwsgi/nyu.log

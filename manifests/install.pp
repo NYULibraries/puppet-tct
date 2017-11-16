@@ -56,14 +56,6 @@ class tct::install (
     mode   => '0755',
   }
 
-  # Install the repos
-  #vcsrepo { "${install_dir}/${backend}":
-  #  ensure     => present,
-  #  provider   => git,
-  #  source     => "https://github.com/NYULibraries/dlts-enm-tct-backend",
-  #  revision   => $backend_revision,
-  #}
-  # Install ius-release and python35u
   include yumrepos::ius
   # Setup python
   ensure_packages(['python34', 

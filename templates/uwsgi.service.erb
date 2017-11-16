@@ -1,9 +1,13 @@
 [Unit]
-Description=uWSGI instance to serve myapp
+Description=uWSGI instance to serve tct
+After=network.target syslog.target
 
 [Service]
-ExecStartPre=-/usr/bin/bash -c 'mkdir -p /run/uwsgi; chown <%= @user %>:nginx /run/uwsgi'
-ExecStart=/usr/bin/bash -c 'cd <%= @install_dir %>/<%= @backend %>; source <%=@venv %>/bin/activate; uwsgi --ini enm_uwsgi.ini'
+User=root
+ExecStart=/usr/bin/bash -c 'mkdir -p /run/uwsgi; chown tct:nginx /run/uwsgi; cd <%= @install_dir %>/<%= @backend %>; source <%=@venv %>/bin/activate; uwsgi --ini enm_uwsgi.ini'
+Type=forking
+StandardError=syslog
+NotifyAccess=main
 
 [Install]
 WantedBy=multi-user.target

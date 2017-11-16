@@ -23,13 +23,13 @@ class tct {
   include tct::install
   include tct::install::backend
   include tct::install::frontend
+  include tct::install::uwsgi
   include tct::nginx
-  include tct::uwsgi
 
   Class[tct::install]->
   Class[tct::install::backend]->
   Class[tct::install::frontend]->
-  Class[tct::nginx]->
-  Class[tct::uwsgi]
+  Class[tct::install::uwsgi]->
+  Class[tct::nginx]
 
 }

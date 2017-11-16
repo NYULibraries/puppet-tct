@@ -41,17 +41,12 @@ class tct::nginx (
   #String $static        = lookup('tct::static', String, 'first'),
 ){
 
-  #file { '/run/nginx':
-  #  ensure => directory,
-  #  owner  => 'nginx',
-  #  group  => 'nginx',
-  #}
   include nginx
   nginx::resource::upstream { 'django' :
     ensure  => present,
     #members => [ 'unix:///tmp/nyu.sock', ],
-    #members => [ 'unix:///run/uwsgi/nyu.sock', ],
-    members => [ 'unix:///tmp/nyu.sock', ],
+    members => [ 'unix:///run/uwsgi/nyu.sock', ],
+    #members => [ 'unix:///tmp/nyu.sock', ],
   }
 
   #file { 'uwsgi_params' :
@@ -60,13 +55,11 @@ class tct::nginx (
   #  group   => 'nginx',
   #  content => template('tct/uwsgi_params.erb'),
   #}
-  #nginx::resource::server { '172.28.128.6/tct':
-  #nginx::resource::server { 'www.tct2.org':
-  #nginx::resource::server { '192.168.50.99':
+
   nginx::resource::server { "$basename" :
-    # www_root => '/var/www/html/dist.prod',
+     www_root => '/var/www/html/dist.prod',
   #  proxy        => 'http://localhost:54506',
-  #uwsgi   => 'unix:/run/uwsgi/tct.sock',
+  #  uwsgi   => 'unix:/run/uwsgi/tct.sock',
   #  uwsgi   => 'unix:/run/uwsgi/nyu.sock',
     listen_options => 'default_server',
     uwsgi          => 'django',
@@ -78,28 +71,38 @@ class tct::nginx (
   # in inatall::backend. It's a bit confusing to leave it there, 
   # but that's where is is for now.
   ##
-  nginx::resource::location { '/media'  :
-    location_alias => $media_root, 
-    server         => $basename,
-    require        => [ File[$media_root], File["$epubs_src_folder"], ],
+  file { "$static_root" :
+    ensure  => directory,
+    owner   => $user,
+    group   => 'nginx',
+    mode    => "0775",
+    require => Class['nginx'],
   }
+
+  #nginx::resource::location { '/media'  :
+  #  location_alias => $media_root, 
+  #  server         => $basename,
+  #  require        => [ File[$media_root], File["$epubs_src_folder"], ],
+  #}
+
   nginx::resource::location { '/static' :
     location_alias => $static_root, 
     server         => $basename,
     require        => File["$static_root"],
   }
   
-  # I thought that /tct should get everything that the bower server
-  # gets, but I guess not
-  nginx::resource::location { '/tct' :
-    location_alias => "/var/www/html/dist.prod", 
-    server         => $basename,
-  }
+  #
+  # this actually needs to go to root, not /tct
+  #
+  #nginx::resource::location { '/tct' :
+  #  location_alias => "/var/www/html/dist.prod", 
+  #  server         => $basename,
+  #}
 
-  nginx::resource::location { '/src' :
-    location_alias => "/var/www/html/src", 
-    server         => $basename,
-  }
+  #nginx::resource::location { '/src' :
+  #  location_alias => "/var/www/html/src", 
+  #  server         => $basename,
+  #}
 
   firewall { '100 allow http and https access' :
     dport  => [80, 443, 8080, 9000],

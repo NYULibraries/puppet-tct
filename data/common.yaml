@@ -2,7 +2,7 @@
 tct::allowed_hosts: undef
 tct::backend: 'backend'
 tct::backend_revision: 'master'
-tct::basename: 'tct.example.org'
+tct::basename: undef
 tct::baseurl: "http://%{basename}/"
 tct::db_host: 'localhost'
 tct::db_password: 'cFHg*Liw45'
@@ -10,12 +10,15 @@ tct::db_user: 'tctdb'
 tct::frontend: 'dlts-enm-tct-frontend'
 tct::frontend_revision: 'master'
 tct::install_dir: '/opt/tct'
-tct::media_root: "/opt/tct/www/%{basename}/media"
 tct::pub_src: "%{install_dir}/www"
+#tct::media_root: "/opt/tct/www/%{basename}/media"
+tct::media_root: "%{pub_src}/%{basename}/media"
 tct::static_root: "%{install_dir}/www/static"
 tct::secret_key: 'some_long_random_string_of_letters_numbers_and_symbols'
 tct::tct_db: 'nyuotl_db'
 tct::user: 'tct'
+#tct::uwsgi_user: 'uwsgi'
+tct::uwsgi_ini: 'enm_uwsgi.ini'
 tct::venv: '/opt/tct/venv'
 tct::www_dir: '/var/www/html'
 tct::epubs_src_folder: "%{media_root}/epubs"

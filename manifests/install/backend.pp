@@ -46,6 +46,7 @@ class tct::install::backend (
     provider => git,
     source   => "https://github.com/NYULibraries/dlts-enm-tct-backend",
     revision => $backend_revision,
+    #user     =>  $user,
   }
 
   # Set up postgres
@@ -85,21 +86,21 @@ class tct::install::backend (
     group  => 'root',
     mode   => '0755',
   }
-  alert("pub_src: $pub_src")
+  #alert("pub_src: $pub_src")
   file { $pub_src:
     ensure => directory,
     owner  => 'root',
     group  => 'root',
     mode   => '0777',
   }
-  alert("basename: $basename")
+  #alert("basename: $basename")
   file { "${pub_src}/${basename}":
     ensure => directory,
     owner  => 'root',
     group  => 'root',
     mode   => '0777',
   }
-  alert("media_root: $media_root")
+  #alert("media_root: $media_root")
   file { $media_root:
     ensure => directory,
     owner  => 'root',
@@ -107,7 +108,7 @@ class tct::install::backend (
     mode   => '0777',
     require => [ Vcsrepo["${install_dir}/${backend}"], Class['postgresql::server'], ],
   }
-  alert("epubs_src_folder: $epubs_src_folder")
+  #alert("epubs_src_folder: $epubs_src_folder")
   file { "$epubs_src_folder":
     ensure => directory,
     owner  => 'root',
@@ -115,13 +116,6 @@ class tct::install::backend (
     mode   => '0777',
     require => [ Vcsrepo["${install_dir}/${backend}"], Class['postgresql::server'], File["$media_root"], ],
   }
-  file { "$static_root" :
-    ensure => directory,
-    owner  => $user,
-    group  => $user,
-    mode   => "0755",
-  }
-
 
   #  `python manage.py loaddata` without a data file argument with
   #  set the db tables and allow things to run
